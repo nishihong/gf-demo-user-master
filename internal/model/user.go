@@ -1,12 +1,12 @@
 package model
 
 type UserCreateInput struct {
-	Passport string
+	Name     string
 	Password string
-	Nickname string
+	Email    string
 }
 
 type UserSignInInput struct {
-	Passport string
+	Name     string
 	Password string
 }

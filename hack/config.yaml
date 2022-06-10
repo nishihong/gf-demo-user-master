@@ -3,8 +3,8 @@
 gfcli:
   gen:
     dao:
-    - link:            "mysql:root:root@tcp(127.0.0.1:3306)/goblog"
-      tables:          "user"
-      removePrefix:    "gf_"
+    - link:            "mysql:root:123Fh9IkkRwC8CF12@tcp(121.214.21.140:61111)/yjs"
+#      tables:          "product"
+      removePrefix:    "ys_"
       descriptionTag:  true
       noModelComment:  true
