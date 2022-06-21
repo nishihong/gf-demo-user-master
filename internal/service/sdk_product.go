@@ -30,7 +30,7 @@ func (s *sSdkProduct) GetSdkProductList(ctx context.Context) (list []v1.SdkProdu
 
 	mod := dao.SdkProduct.Ctx(ctx)
 
-	err := mod.Order("id asc").Scan(&list)
+	err := mod.Where("status=", 1).Order("sort asc").Scan(&list)
 	if err != nil {
 		err = gerror.Newf(`ErrorORM`)
 
