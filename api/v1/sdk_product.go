@@ -14,10 +14,10 @@ type GetSdkProductReq struct {
 
 //GetProductRes 查询列表结果
 type GetSdkProductRes struct {
-	List []SdkProductOutputItem `json:"list"   dc:"列表"`
+	List []SdkProductItem `json:"list"   dc:"列表"`
 }
 
-type SdkProductOutputItem struct {
+type SdkProductItem struct {
 	Id               uint   `json:"id"`
 	Name             string `json:"name"`
 	Amount           string `json:"amount"`

@@ -26,7 +26,7 @@ func SdkProduct() *sSdkProduct {
 }
 
 // GetProfile retrieves and returns current user info in session.
-func (s *sSdkProduct) GetSdkProductList(ctx context.Context) (list []v1.SdkProductOutputItem) {
+func (s *sSdkProduct) GetSdkProductList(ctx context.Context) (list []v1.SdkProductItem) {
 
 	mod := dao.SdkProduct.Ctx(ctx)
 

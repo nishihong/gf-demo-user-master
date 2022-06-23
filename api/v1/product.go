@@ -5,7 +5,7 @@ import (
 )
 
 type GetStatusReq struct {
-	g.Meta `path:"/api/sdk/getStatus" method:"get" tags:"." summary:"Get the . list"`
+	g.Meta `path:"/api/sdk/getStatus" method:"get" tags:"product" summary:"Get the product list"`
 }
 
 type GetStatusRes struct {

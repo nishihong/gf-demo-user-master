@@ -28,15 +28,16 @@ var (
 				)
 				// Register route handlers.
 				group.Bind(
-					controller.User,
+					//controller.User,
 					controller.SdkProduct,
 					controller.Product,
+					controller.SdkUserProduct,
 				)
 				// Special handler that needs authentication.
 				group.Group("/", func(group *ghttp.RouterGroup) {
 					group.Middleware(service.Middleware().Auth)
 					group.ALLMap(g.Map{
-						"/user/profile": controller.User.Profile,
+						//"/user/profile": controller.User.Profile,
 					})
 				})
 			})

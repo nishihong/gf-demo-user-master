@@ -10,7 +10,7 @@ var Product = cProduct{}
 
 type cProduct struct{}
 
-func (a *cProduct) GetSdkProductList(ctx context.Context, req *v1.GetStatusReq) (res *v1.GetStatusRes, err error) {
+func (a *cProduct) GetStatusList(ctx context.Context, req *v1.GetStatusReq) (res *v1.GetStatusRes, err error) {
 
 	res = &v1.GetStatusRes{
 		List: map[int]string{
