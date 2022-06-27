@@ -20,12 +20,12 @@ var (
 	insSdkProduct = sSdkProduct{}
 )
 
-// Product returns the interface of Product service.
+// SdkProduct returns the interface of SdkProduct service.
 func SdkProduct() *sSdkProduct {
 	return &insSdkProduct
 }
 
-// GetProfile retrieves and returns current user info in session.
+// GetSdkProductList
 func (s *sSdkProduct) GetSdkProductList(ctx context.Context) (list []v1.SdkProductItem) {
 
 	mod := dao.SdkProduct.Ctx(ctx)

@@ -32,6 +32,7 @@ var (
 					controller.SdkProduct,
 					controller.Product,
 					controller.SdkUserProduct,
+					controller.SdkUserSerial,
 				)
 				// Special handler that needs authentication.
 				group.Group("/", func(group *ghttp.RouterGroup) {
