@@ -39,10 +39,15 @@ func SdkUserSerial() *sSdkUserSerial {
 // GetSdkList
 func (s *sSdkUserSerial) GetUserSerialList(ctx context.Context, id int) (list []v1.SdkSerialListItem) {
 
+	//当前用户
+	userId := Context().Get(ctx).User.Id
+
+	fmt.Println(userId)
+
 	mod := dao.SdkUserSerial.Ctx(ctx)
 
 	mod = mod.Where("sdk_user_product_id=", id).
-		Where("user_id=", 19629).
+		Where("user_id=", userId).
 		Order("id asc")
 
 	result, err := mod.All()
@@ -60,7 +65,7 @@ func (s *sSdkUserSerial) GetUserSerialList(ctx context.Context, id int) (list []
 		host_count, _ := dao.SdkRules.Ctx(ctx).Where("user_serial_id=", v["id"]).Distinct().CountColumn("source_ip")
 		results[i].HostCount = host_count
 
-		results[i].Id = v["id"].Uint()
+		results[i].Id = v["id"].Int()
 		results[i].UserId = v["user_id"].Int()
 		results[i].Number = v["number"].String()
 		results[i].Name = v["remark"].String()
@@ -96,6 +101,7 @@ func (s *sSdkUserSerial) EditUserSerial(ctx context.Context, id int, name string
 	info, err := mod.Where("id=", id).
 		Where("user_id=", 19629).
 		One()
+
 	// ？？？ code返回值定义问题
 	if err != nil {
 		return gerror.Newf(`ErrorORM`)
@@ -122,7 +128,6 @@ func (s *sSdkUserSerial) CreateUserSerial(ctx context.Context, sdk_user_product_
 
 	//判断长度
 	length := len(name)
-	//fmt.Println(length)
 	// ？？？中文的算三个长度，未处理
 	if length < 2 || length > 20 {
 		// ？？？ 正常错误应该如何返回

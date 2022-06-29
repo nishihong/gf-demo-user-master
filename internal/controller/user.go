@@ -22,10 +22,18 @@ type cUser struct{}
 //	return
 //}
 func (c *cUser) SignIn(ctx context.Context, req *v1.UserSignInReq) (res *v1.UserSignInRes, err error) {
-	err = service.User().SignIn(ctx, model.UserSignInInput{
-		Name:     req.Name,
-		Password: req.Password,
+	Result, err := service.User().SignIn(ctx, model.UserSignInInput{
+		Username:  req.Username,
+		Password:  req.Password,
+		SubUserId: req.SubUserId,
 	})
+
+	res = &v1.UserSignInRes{
+		AccessToken: Result["AccessToken"].(string),
+		TokenType:   Result["TokenType"].(string),
+		ExpiresIn:   Result["ExpiresIn"].(int),
+	}
+
 	return
 }
 
@@ -63,9 +71,9 @@ func (c *cUser) SignOut(ctx context.Context, req *v1.UserSignOutReq) (res *v1.Us
 //	return
 //}
 //
-func (c *cUser) Profile(ctx context.Context, req *v1.UserProfileReq) (res *v1.UserProfileRes, err error) {
-	res = &v1.UserProfileRes{
-		User: service.User().GetProfile(ctx),
-	}
-	return
-}
+//func (c *cUser) Profile(ctx context.Context, req *v1.UserProfileReq) (res *v1.UserProfileRes, err error) {
+//	res = &v1.UserProfileRes{
+//		User: service.User().GetProfile(ctx),
+//	}
+//	return
+//}

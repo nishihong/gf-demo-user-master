@@ -47,6 +47,14 @@ func (s *sMiddleware) Auth(r *ghttp.Request) {
 	}
 }
 
+//func (s *sMiddleware) AuthRedis(r *ghttp.Request) {
+//	if User().IsSignedInRedis(r) {
+//		r.Middleware.Next()
+//	} else {
+//		r.Response.WriteStatus(http.StatusForbidden)
+//	}
+//}
+
 // CORS allows Cross-origin resource sharing.
 func (s *sMiddleware) CORS(r *ghttp.Request) {
 	r.Response.CORSDefault()

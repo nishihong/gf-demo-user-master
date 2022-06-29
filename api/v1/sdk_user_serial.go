@@ -16,7 +16,7 @@ type GetUserSerialListRes struct {
 }
 
 type SdkSerialListItem struct {
-	Id        uint   `json:"id"`
+	Id        int    `json:"id"`
 	UserId    int    `json:"user_id"`
 	Number    string `json:"number"`
 	Name      string `json:"name"`

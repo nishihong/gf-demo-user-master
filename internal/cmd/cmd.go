@@ -28,18 +28,25 @@ var (
 				)
 				// Register route handlers.
 				group.Bind(
-					//controller.User,
-					controller.SdkProduct,
-					controller.Product,
-					controller.SdkUserProduct,
-					controller.SdkUserSerial,
+					controller.User,
+				//controller.SdkProduct,
+				//controller.Product,
+				//controller.SdkUserProduct,
+				//controller.SdkUserSerial,
 				)
 				// Special handler that needs authentication.
 				group.Group("/", func(group *ghttp.RouterGroup) {
 					group.Middleware(service.Middleware().Auth)
-					group.ALLMap(g.Map{
-						//"/user/profile": controller.User.Profile,
-					})
+					//group.ALLMap(g.Map{
+					//	//"/user/profile": controller.User.Profile,
+					//})
+
+					group.Bind(
+						controller.SdkProduct,     // 个人
+						controller.Product,        // 内容
+						controller.SdkUserProduct, // 交互
+						controller.SdkUserSerial,  // 文件
+					)
 				})
 			})
 			// Custom enhance API document.

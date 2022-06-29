@@ -11,10 +11,11 @@ type GetSdkListReq struct {
 	ProductType   int         `json:"product_type"`
 	ProductStatus int         `json:"product_status"`
 	Search        string      `json:"search"`
-	StartTime     *gtime.Time `json:"start_time"`
-	EndTime       *gtime.Time `json:"end_time"`
-	Page          int         `json:"page"`
-	Limit         int         `json:"limit"`
+	StartTime     *gtime.Time `json:"start_time"
+`
+	EndTime *gtime.Time `json:"end_time"`
+	Page    int         `json:"page"`
+	Limit   int         `json:"limit"`
 }
 
 type GetSdkListRes struct {

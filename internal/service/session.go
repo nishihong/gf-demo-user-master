@@ -23,7 +23,7 @@ func Session() *sSession {
 }
 
 // SetUser sets user into the session.
-func (s *sSession) SetUser(ctx context.Context, user *entity.User) error {
+func (s *sSession) SetUser(ctx context.Context, user map[string]interface{}) error {
 	return Context().Get(ctx).Session.Set(consts.UserSessionKey, user)
 }
 
