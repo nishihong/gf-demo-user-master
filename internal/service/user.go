@@ -42,41 +42,6 @@ func User() *sUser {
 	return &insUser
 }
 
-// Create creates user account.
-//func (s *sUser) Create(ctx context.Context, in model.UserCreateInput) (err error) {
-//	// If Nickname is not specified, it then uses Passport as its default Nickname.
-//	if in.Nickname == "" {
-//		in.Nickname = in.Passport
-//	}
-//	var (
-//		available bool
-//	)
-//	// Passport checks.
-//	available, err = s.IsPassportAvailable(ctx, in.Passport)
-//	if err != nil {
-//		return err
-//	}
-//	if !available {
-//		return gerror.Newf(`Passport "%s" is already token by others`, in.Passport)
-//	}
-//	// Nickname checks.
-//	available, err = s.IsNicknameAvailable(ctx, in.Nickname)
-//	if err != nil {
-//		return err
-//	}
-//	if !available {
-//		return gerror.Newf(`Nickname "%s" is already token by others`, in.Nickname)
-//	}
-//	return dao.User.Transaction(ctx, func(ctx context.Context, tx *gdb.TX) error {
-//		_, err = dao.User.Ctx(ctx).Data(do.User{
-//			Passport: in.Passport,
-//			Password: in.Password,
-//			Nickname: in.Nickname,
-//		}).Insert()
-//		return err
-//	})
-//}
-
 // IsSignedIn checks and returns whether current user is already signed-in.
 func (s *sUser) IsSignedIn(ctx context.Context) bool {
 	if v := Context().Get(ctx); v != nil && v.User != nil {
@@ -88,10 +53,6 @@ func (s *sUser) IsSignedIn(ctx context.Context) bool {
 // IsSignedIn checks and returns whether current user is already signed-in.
 func (s *sUser) IsSignedInRedis(r *ghttp.Request) bool {
 	token := r.Request.Header.Get("authorization")
-
-	//fmt.Println(token)
-	//fmt.Println(153465)
-	//return true
 
 	if token == "" {
 		r.Response.WriteStatus(http.StatusBadRequest, "token不能为空！")
@@ -105,7 +66,6 @@ func (s *sUser) IsSignedInRedis(r *ghttp.Request) bool {
 	)
 
 	result, err := g.Redis().Do(ctxRedis, "GET", token)
-	//fmt.Println(result)
 
 	////验证token是否过期    ？？？判断方式有不对  null 和nil
 	if result == nil {
@@ -139,10 +99,6 @@ func (s *sUser) IsSignedInRedis(r *ghttp.Request) bool {
 	//	fmt.Println(err)
 	//}
 
-	//fmt.Println(user_info.Id)
-	//fmt.Println(result)
-	//fmt.Println(user_info)
-
 	if err != nil {
 		fmt.Println(err)
 		r.Response.WriteStatus(http.StatusBadRequest, "redis连接错误！！！")
@@ -156,10 +112,6 @@ func (s *sUser) IsSignedInRedis(r *ghttp.Request) bool {
 		return false
 	}
 
-	//fmt.Println(result)
-
-	//return true
-
 	// 判断请求权限
 	// 获取是否子账号，且为只读（2）权限
 	sub_type := 1
@@ -172,11 +124,13 @@ func (s *sUser) IsSignedInRedis(r *ghttp.Request) bool {
 	}
 
 	if sub_type == 2 && sub_auth == 1 {
-		// ？？？？ other写法  in_array写法
-		//if in_array(request()->route()->getActionName(), config('other.auth_sub_allow'))) {
 
-		r.Response.WriteStatus(http.StatusBadRequest, "子账号无此操作权限！请联系管理员代为操作！")
-		return false
+		//allow_arr := []string{"SdkUserProductController@editName", "SdkUserSerialController@editName", "SdkUserSerialController@store", "SdkUserSerialController@delete", "RuleController@store", "RuleController@update", "SdkUserSerialController@destroy", "SdkUserSerialController@store"}
+
+		//？？？如何获取当前控制器-方法 还有in_array的方法
+		//if inArray("test", allow_arr) {
+		//	r.Response.WriteStatus(http.StatusBadRequest, "子账号无此操作权限！请联系管理员代为操作！")
+		//	return false
 		//}
 	}
 
@@ -204,18 +158,14 @@ func (s *sUser) SignIn(ctx context.Context, in model.UserSignInInput) (res map[s
 	}
 
 	//调用接口
-	user, err_login := YcLogin(username, password)
-
-	fmt.Println(user)
+	user, err_login := YcLogin(ctx, username, password)
 
 	if err_login != nil {
-		return nil, gerror.New(`接口失败`)
+		return nil, err_login
 	}
 	if user == nil {
 		return nil, gerror.New(`账号或密码错误`)
 	}
-
-	fmt.Println(3333)
 
 	//if err = Session().SetUser(ctx, user); err != nil {
 	//	return err
@@ -227,7 +177,7 @@ func (s *sUser) SignIn(ctx context.Context, in model.UserSignInInput) (res map[s
 	//	Name: user.Name,
 	//})
 
-	//结构体转数组 ？？？？
+	//结构体转数组
 	userArray := make(map[string]interface{})
 	userArray["Id"] = user.Id
 	userArray["Name"] = user.Name
@@ -241,12 +191,10 @@ func (s *sUser) SignIn(ctx context.Context, in model.UserSignInInput) (res map[s
 	// token的方式
 	token := SetToken(username, userArray, sub_user_id)
 
-	result := make(map[string]interface{})
-	result["AccessToken"] = token
-	result["TokenType"] = "bearer"
-	result["ExpiresIn"] = 3600
-
-	res = result
+	res = make(map[string]interface{})
+	res["AccessToken"] = token
+	res["TokenType"] = "bearer"
+	res["ExpiresIn"] = 3600
 
 	return res, nil
 }
@@ -256,105 +204,59 @@ func (s *sUser) SignOut(ctx context.Context) error {
 	return Session().RemoveUser(ctx)
 }
 
-// IsPassportAvailable checks and returns given passport is available for signing up.
-//func (s *sUser) IsPassportAvailable(ctx context.Context, passport string) (bool, error) {
-//	count, err := dao.User.Ctx(ctx).Where(do.User{
-//		Passport: passport,
-//	}).Count()
-//	if err != nil {
-//		return false, err
-//	}
-//	return count == 0, nil
-//}
-
-// IsNicknameAvailable checks and returns given nickname is available for signing up.
-//func (s *sUser) IsNicknameAvailable(ctx context.Context, nickname string) (bool, error) {
-//	count, err := dao.User.Ctx(ctx).Where(do.User{
-//		Nickname: nickname,
-//	}).Count()
-//	if err != nil {
-//		return false, err
-//	}
-//	return count == 0, nil
-//}
-
-// GetProfile retrieves and returns current user info in session.
-//func (s *sUser) GetProfile(ctx context.Context) *entity.User {
-//	return Session().GetUser(ctx)
-//}
-
 //自定义函数
-func YcLogin(username string, password string) (data *entity.User, err error) {
-	// ？？？？ 地址没有用config
+func YcLogin(ctx context.Context, username string, password string) (data *entity.User, err error) {
 	var (
-		//url  = config('other.cw_url');
-		url_string = "http://121.204.251.6:1111/admin.php"
-		//key  = config('other.cw_key');
-		key = "BBB1EBABA18DE518AF2CA31E5ADF74F1"
+		url_string = g.Cfg().MustGet(ctx, `env.cw_url`).String()
+		key        = g.Cfg().MustGet(ctx, `env.cw_key`).String()
 	)
 	url_string = url_string + "/yf_api_guo/login?name=" + url.QueryEscape(username) + "&password=" + url.QueryEscape(password) + "&key=" + key
 
-	//fmt.Println(2)
-
 	resp, err := http.Get(url_string)
 	if err != nil {
-		//fmt.Println(13212)
 		return nil, err
 	}
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Println("read from resp.Body failed, err:%v\n", err)
-		//fmt.Printf("read from resp.Body failed, err:%v\n", err)
-		return nil, err
+		return nil, gerror.Newf(`read from resp.Body failed`)
 	}
 
-	test := make(map[string]interface{})
+	result := make(map[string]interface{})
 	//解码
-	err = json.Unmarshal([]byte(string(body)), &test)
+	err = json.Unmarshal([]byte(string(body)), &result)
 	if err != nil {
-		//fmt.Println(err)
 		return nil, err
 	}
 
-	//_, ok := test["status"]
-	//fmt.Println(ok)
-
-	fmt.Println(test, err)
-	//fmt.Println(test["data"].(map[string]interface{})["id"], err)
-
-	// 登录失败返回   ？？？ 值判断有问题
-	//if test["status"] != 1 {
-	//	fmt.Println(16565)
-	//	return nil, err
-	//}
+	// 登录失败返回
+	if result["status"].(string) != "1" {
+		return nil, gerror.Newf(`登录失败，账号或者密码错误`)
+	}
 
 	//用户存更新
 	info, err := g.DB().Model("yjs_user").
 		Where("name=", username).
 		One()
-	fmt.Println(info)
 
 	if err != nil {
 		return nil, gerror.Newf(`ErrorORM`)
-		//return err
 	}
+
 	//密码处理
 	password_string := []byte(password)
 	password_string, _ = bcrypt.GenerateFromPassword(password_string, bcrypt.MinCost)
-	//fmt.Println(password_string)
 
 	if info == nil {
 		_, err = g.DB().Model("yjs_user").Data(do.User{
-			Id:       test["data"].(map[string]interface{})["id"],
-			UserId:   test["data"].(map[string]interface{})["id"],
+			Id:       result["data"].(map[string]interface{})["id"],
+			UserId:   result["data"].(map[string]interface{})["id"],
 			Name:     username,
-			Email:    test["data"].(map[string]interface{})["email"],
-			Mobile:   test["data"].(map[string]interface{})["mobile"],
+			Email:    result["data"].(map[string]interface{})["email"],
+			Mobile:   result["data"].(map[string]interface{})["mobile"],
 			Password: password_string,
 		}).Insert()
 		if err != nil {
-			fmt.Println(222)
 			return nil, err
 		}
 		info, err = g.DB().Model("yjs_user").
@@ -365,21 +267,21 @@ func YcLogin(username string, password string) (data *entity.User, err error) {
 		}
 	}
 
-	//return nil, nil
-
 	update_info := make(map[string]interface{})
 	if info["password"].String() == "" {
 		update_info["Password"] = password
 	}
-	update_info["mobile"] = test["data"].(map[string]interface{})["mobile"]
-	update_info["email"] = test["data"].(map[string]interface{})["email"]
-	update_info["login_ip"] = "127.0.0.1" //？？？？真实ip还没做
+	update_info["mobile"] = result["data"].(map[string]interface{})["mobile"]
+	update_info["email"] = result["data"].(map[string]interface{})["email"]
+
+	r := g.RequestFromCtx(ctx)
+	update_info["login_ip"] = r.GetClientIp()
+	//fmt.Println(r.GetClientIp())
 
 	_, err = g.DB().Model("yjs_user").
 		Where("id=", info["id"]).
 		Data(update_info).
 		Update()
-	//fmt.Println(err)
 	if err != nil {
 		return nil, err
 	}
@@ -402,29 +304,26 @@ func YcLogin(username string, password string) (data *entity.User, err error) {
 func SetToken(username string, user map[string]interface{}, sub_user_id int) (token string) {
 	//生成token
 	str := MD5(MD5(strconv.FormatInt(time.Now().UnixNano()/1e6, 10)))
-	//fmt.Println(strconv.FormatInt(time.Now().UnixNano()/1e6, 10))
 	token = SHA1(str + username)
-
-	fmt.Println(token)
-	fmt.Println(user)
+	//fmt.Println(token)
 
 	user["SubType"] = 1 // 1 主账号 2子账号
 	user["SubAuth"] = 1 // 1 管理 2只读
 	user["SubInfo"] = nil
+
 	// 为子账号，带入子账号数据
-
-	fmt.Println(sub_user_id)
-
 	if sub_user_id > 0 {
 		// ？？？ 引用外部接口应该用什么方式
-		sub_user_info := SubAccount(user["id"].(int), sub_user_id)
+		sub_user_info, err := SubAccount(user["Id"].(uint), sub_user_id)
 
 		user["SubType"] = 2 // 1 主账号 2子账号
-		if sub_user_info["data"].(map[string]interface{})["is_read_only"] != nil {
-			user["SubAuth"] = sub_user_info["data"].(map[string]interface{})["is_read_only"] // 1 管理 2只读
-		}
-		if sub_user_info["data"].(map[string]interface{})["sub_user"] != nil {
-			user["SubInfo"] = sub_user_info["data"].(map[string]interface{})["sub_user"]
+		if err == nil {
+			if sub_user_info["data"].(map[string]interface{})["is_read_only"] != nil {
+				user["SubAuth"] = sub_user_info["data"].(map[string]interface{})["is_read_only"] // 1 管理 2只读
+			}
+			if sub_user_info["data"].(map[string]interface{})["sub_user"] != nil {
+				user["SubInfo"] = sub_user_info["data"].(map[string]interface{})["sub_user"]
+			}
 		}
 	}
 
@@ -456,18 +355,19 @@ func SHA1(s string) string {
 	o.Write([]byte(s))
 	return hex.EncodeToString(o.Sum(nil))
 }
-func SubAccount(user_id int, sub_user_id int) map[string]interface{} {
-	url := "http://121.204.251.6:1114" + "/api/sub_account/get_role" + "?user_id=" + string(user_id) + "&sub_user_id=" + string(sub_user_id) + "&type=11"
 
+func SubAccount(user_id uint, sub_user_id int) (map[string]interface{}, error) {
+	var ctx context.Context
+
+	url := g.Cfg().MustGet(ctx, `env.sjzx_url`).String() + "/api/sub_account/get_role" + "?user_id=" + string(user_id) + "&sub_user_id=" + string(sub_user_id) + "&type=11"
 	headers := make(map[string]string)
-	headers["token"] = "yjs_InsYJd9IOjpk"
-	headers["unique"] = "21a57ce0b1b0658f80c48d645a779a24"
-
+	headers["token"] = g.Cfg().MustGet(ctx, `env.sjzx_token`).String()
+	headers["unique"] = g.Cfg().MustGet(ctx, `env.sjzx_unique`).String()
 	client := &http.Client{}
 
 	req, err := http.NewRequest("POST", url, strings.NewReader(string([]byte("test"))))
 	if err != nil {
-		return nil
+		return nil, err
 	}
 	for key, header := range headers {
 		req.Header.Set(key, header)
@@ -476,16 +376,15 @@ func SubAccount(user_id int, sub_user_id int) map[string]interface{} {
 	defer resp.Body.Close()
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return nil
+		return nil, err
 	}
 
 	test := make(map[string]interface{})
 	//解码
 	err = json.Unmarshal([]byte(string(body)), &test)
 	if err != nil {
-		//fmt.Println(err)
-		return nil
+		return nil, err
 	}
 
-	return test
+	return test, nil
 }

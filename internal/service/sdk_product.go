@@ -4,10 +4,9 @@ import (
 	"context"
 
 	v1 "github.com/gogf/gf-demo-user/v2/api/v1"
+	"github.com/gogf/gf/v2/errors/gerror"
 
 	"github.com/gogf/gf-demo-user/v2/internal/service/internal/dao"
-
-	"github.com/gogf/gf/v2/errors/gerror"
 )
 
 type (
@@ -26,16 +25,15 @@ func SdkProduct() *sSdkProduct {
 }
 
 // GetSdkProductList
-func (s *sSdkProduct) GetSdkProductList(ctx context.Context) (list []v1.SdkProductItem) {
+func (s *sSdkProduct) GetSdkProductList(ctx context.Context) (list []v1.SdkProductItem, err error) {
 
 	mod := dao.SdkProduct.Ctx(ctx)
 
-	err := mod.Where("status=", 1).Order("sort asc").Scan(&list)
+	err = mod.Where("status=", 1).Order("sort asc").Scan(&list)
 	if err != nil {
 		err = gerror.Newf(`ErrorORM`)
-
-		return nil
+		return nil, err
 	}
 
-	return list
+	return list, nil
 }

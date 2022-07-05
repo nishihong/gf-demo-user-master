@@ -78,9 +78,12 @@ func (s *sSdkUserSerial) GetUserSerialList(ctx context.Context, id int) (list []
 // GetKey.
 func (s *sSdkUserSerial) GetKey(ctx context.Context, id int) string {
 
+	//当前用户
+	userId := Context().Get(ctx).User.Id
+
 	mod := dao.SdkUserSerial.Ctx(ctx)
 
-	sdk_key, err := mod.Where("id=", id).Where("user_id=", 19629).Value("sdk_key")
+	sdk_key, err := mod.Where("id=", id).Where("user_id=", userId).Value("sdk_key")
 	fmt.Println(sdk_key.String())
 	if err != nil {
 		err = gerror.Newf(`ErrorORM`)
@@ -96,10 +99,13 @@ func (s *sSdkUserSerial) GetKey(ctx context.Context, id int) string {
 
 // EditUserSerial.
 func (s *sSdkUserSerial) EditUserSerial(ctx context.Context, id int, name string) error {
+	//当前用户
+	userId := Context().Get(ctx).User.Id
+
 	mod := dao.SdkUserSerial.Ctx(ctx)
 
 	info, err := mod.Where("id=", id).
-		Where("user_id=", 19629).
+		Where("user_id=", userId).
 		One()
 
 	// ？？？ code返回值定义问题
@@ -112,7 +118,7 @@ func (s *sSdkUserSerial) EditUserSerial(ctx context.Context, id int, name string
 	}
 
 	_, err = mod.Where("id=", id).
-		Where("user_id=", 19629).
+		Where("user_id=", userId).
 		Data(dao.SdkUserSerial.Columns().Remark, name).
 		Update()
 	if err != nil {
@@ -123,6 +129,9 @@ func (s *sSdkUserSerial) EditUserSerial(ctx context.Context, id int, name string
 
 // EditUserSerial.
 func (s *sSdkUserSerial) CreateUserSerial(ctx context.Context, sdk_user_product_id int, name string) error {
+
+	//当前用户
+	userId := Context().Get(ctx).User.Id
 
 	name = strings.TrimSpace(name) //去除前后空格
 
@@ -137,7 +146,7 @@ func (s *sSdkUserSerial) CreateUserSerial(ctx context.Context, sdk_user_product_
 	//判断sdk是否属于当前客户
 	sdk_user_product_data, err := dao.SdkUserProduct.Ctx(ctx).
 		Where("id=", sdk_user_product_id).
-		Where("user_id=", 19629).
+		Where("user_id=", userId).
 		One()
 	//fmt.Println(sdk_user_product_data)
 	if err != nil {
@@ -159,15 +168,15 @@ func (s *sSdkUserSerial) CreateUserSerial(ctx context.Context, sdk_user_product_
 	//判断当前是否有超限制
 	count, err := dao.SdkUserSerial.Ctx(ctx).Where("sdk_user_product_id=", sdk_user_product_id).
 		Count()
-	//fmt.Println(game_num, count)
+
 	if game_num <= count {
 		return gerror.Newf(`游戏授权数已超出限制，请升级套餐。`)
 	}
 
 	number := SetProductNum()
-	//fmt.Println(number)
+
 	_, err = dao.SdkUserSerial.Ctx(ctx).Data(do.SdkUserSerial{
-		UserId:           19629,
+		UserId:           userId,
 		Number:           number,
 		SdkUserProductId: sdk_user_product_id,
 		ProductId:        sdk_user_product_data["product_id"],
@@ -179,7 +188,9 @@ func (s *sSdkUserSerial) CreateUserSerial(ctx context.Context, sdk_user_product_
 		CreatedAt:        gtime.Now(),
 		UpdatedAt:        gtime.Now(),
 	}).Insert()
+
 	if err != nil {
+		err = gerror.Newf(`ErrorORM`)
 		return err
 	}
 	return nil
@@ -187,10 +198,13 @@ func (s *sSdkUserSerial) CreateUserSerial(ctx context.Context, sdk_user_product_
 
 // DeleteUserSerial.
 func (s *sSdkUserSerial) DeleteUserSerial(ctx context.Context, id int) error {
+	//当前用户
+	userId := Context().Get(ctx).User.Id
+
 	mod := dao.SdkUserSerial.Ctx(ctx)
 
 	info, err := mod.Where("id=", id).
-		Where("user_id=", 19629).
+		Where("user_id=", userId).
 		One()
 	//fmt.Println(len(info))
 	// ？？？ code返回值定义问题
@@ -203,12 +217,12 @@ func (s *sSdkUserSerial) DeleteUserSerial(ctx context.Context, id int) error {
 	}
 
 	_, err = mod.Where("id=", id).
-		Where("user_id=", 19629).
+		Where("user_id=", userId).
 		Delete()
 	if err != nil {
 		return gerror.Newf(`ErrorORM`)
-		//return err
 	}
+
 	return nil
 }
 

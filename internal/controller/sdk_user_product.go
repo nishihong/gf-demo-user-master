@@ -26,7 +26,9 @@ func (a *cSdkUserProduct) GetList(ctx context.Context, req *v1.GetSdkListReq) (r
 		Page:          req.Page,
 		Limit:         req.Limit,
 	})
-	//fmt.Println(Result)
+	if err != nil {
+		return nil, err
+	}
 
 	res = &v1.GetSdkListRes{
 		Data:        Result.Data,
@@ -40,8 +42,14 @@ func (a *cSdkUserProduct) GetList(ctx context.Context, req *v1.GetSdkListReq) (r
 
 func (a *cSdkUserProduct) Download(ctx context.Context, req *v1.DownloadReq) (res *v1.DownloadRes, err error) {
 
+	Result, err := service.SdkUserProduct().Download(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
 	res = &v1.DownloadRes{
-		DownloadItem: service.SdkUserProduct().Download(ctx),
+		DownloadItem: Result,
 	}
 
 	return

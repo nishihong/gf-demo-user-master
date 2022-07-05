@@ -14,8 +14,14 @@ type cSdkProduct struct{}
 
 func (a *cSdkProduct) GetSdkProductList(ctx context.Context, req *v1.GetSdkProductReq) (res *v1.GetSdkProductRes, err error) {
 
+	Result, err := service.SdkProduct().GetSdkProductList(ctx)
+
+	if err != nil {
+		return nil, err
+	}
+
 	res = &v1.GetSdkProductRes{
-		List: service.SdkProduct().GetSdkProductList(ctx),
+		List: Result,
 	}
 	return
 }

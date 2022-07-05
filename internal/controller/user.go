@@ -28,6 +28,10 @@ func (c *cUser) SignIn(ctx context.Context, req *v1.UserSignInReq) (res *v1.User
 		SubUserId: req.SubUserId,
 	})
 
+	if err != nil {
+		return nil, err
+	}
+
 	res = &v1.UserSignInRes{
 		AccessToken: Result["AccessToken"].(string),
 		TokenType:   Result["TokenType"].(string),
@@ -39,8 +43,9 @@ func (c *cUser) SignIn(ctx context.Context, req *v1.UserSignInReq) (res *v1.User
 
 func (c *cUser) IsSignedIn(ctx context.Context, req *v1.UserIsSignedInReq) (res *v1.UserIsSignedInRes, err error) {
 	res = &v1.UserIsSignedInRes{
-		OK: service.User().IsSignedIn(ctx),
+		IsOnline: service.User().IsSignedIn(ctx),
 	}
+
 	return
 }
 

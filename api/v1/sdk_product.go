@@ -8,10 +8,6 @@ type GetSdkProductReq struct {
 	g.Meta `path:"/api/sdk/product" method:"get" tags:"SdkProduct" summary:"Get the sdk_product list"`
 }
 
-//type GetProductRes struct {
-//	//*entity.Product
-//}
-
 //GetProductRes 查询列表结果
 type GetSdkProductRes struct {
 	List []SdkProductItem `json:"list"   dc:"列表"`

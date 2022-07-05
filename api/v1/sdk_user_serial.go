@@ -6,9 +6,9 @@ import (
 
 type GetUserSerialListReq struct {
 	g.Meta `path:"/api/sdk/userSerial" method:"get" tags:"userSerial" summary:"Get the sdk_user_serial list"`
-	Id     int `json:"id"`
-	Page   int `json:"page"`
-	Limit  int `json:"limit"`
+	Id     int `json:"id" v:"required"`
+	//Page   int `json:"page"`
+	//Limit  int `json:"limit"`
 }
 
 type GetUserSerialListRes struct {
@@ -25,7 +25,7 @@ type SdkSerialListItem struct {
 
 type GetKeyReq struct {
 	g.Meta `path:"/api/sdk/userSerial/getKey" method:"get" tags:"getKey" summary:"Get key"`
-	Id     int `json:"id"`
+	Id     int `json:"id" v:"required"`
 }
 type GetKeyRes struct {
 	Data string `json:"data"`
@@ -33,8 +33,8 @@ type GetKeyRes struct {
 
 type EditUserSerialReq struct {
 	g.Meta `path:"/api/sdk/userSerial/one" method:"post" tags:"EditUserSerial" summary:"EditUserSerial"`
-	Id     int    `json:"id"`
-	Name   string `json:"name"`
+	Id     int    `json:"id" v:"required"`
+	Name   string `json:"name" v:"required"`
 }
 type EditUserSerialRes struct {
 }

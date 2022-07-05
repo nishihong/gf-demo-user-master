@@ -19,6 +19,22 @@ database:
     stdout:  true
 
   default:
-    link:   "mysql:root:root@tcp(127.0.0.1:3306)/goblog"
+    link:   "mysql:root:Fh9Ik12kRwC8CF@tcp(121.204.251.140:61011)/yjs"
     debug:  true
 
+# Redis 配置示例
+redis:
+  # 单实例配置示例1
+  default:
+    address: 127.0.0.1:6379
+    db:      1
+    pass:
+
+
+# ENV配置
+env:
+  data_center_token:  "yjs_InsYJ12d9IOjpk"
+  data_center_unique: "21a57ce0b1b065128f80c48d645a779a24"
+  data_center_url:    "http://12.204.251.6:1114"
+  cw_url:             "http://12.204.251.6:1111/admin.php"
+  cw_key:             "BBB1EBABA18DE12518AF2CA31E5ADF74F1"

@@ -2,7 +2,6 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/gogf/gf-demo-user/v2/internal/service/internal/dao"
 
@@ -36,6 +35,9 @@ func (s *sSdkUserProduct) GetSdkList(ctx context.Context, in model.GetSdkUserPro
 		likePattern = `%` + in.Keyword + `%`
 	)
 
+	//当前用户
+	userId := Context().Get(ctx).User.Id
+
 	//默认值
 	if in.Page == 0 {
 		in.Page = 1
@@ -54,9 +56,7 @@ func (s *sSdkUserProduct) GetSdkList(ctx context.Context, in model.GetSdkUserPro
 		LeftJoin("yjs_sdk_user_product_setting b", "a.id=b.user_product_id")
 
 	//条件
-	//if in.UserId != "" {
-	//	m = m.Where("a.user_id", in.UserId)
-	//}
+	mod = mod.Where("a.user_id", userId)
 	if in.Keyword != "" {
 		mod = mod.WhereLike("a.device_id", likePattern).WhereOrLike("a.bz", likePattern)
 	}
@@ -124,29 +124,28 @@ func (s *sSdkUserProduct) GetSdkList(ctx context.Context, in model.GetSdkUserPro
 		results[i].ProductStatus = product_status
 	}
 	list.Data = results
-	//fmt.Println(list)
 
 	return list, nil
 }
 
 // Download.
-func (s *sSdkUserProduct) Download(ctx context.Context) (res *v1.DownloadItem) {
+func (s *sSdkUserProduct) Download(ctx context.Context) (res *v1.DownloadItem, err error) {
 
 	mod := dao.SdkSoftware.Ctx(ctx)
 
 	sdkSoftwareInfo, err := mod.Where("type=", 5).Order("id desc").One()
-	fmt.Println(sdkSoftwareInfo)
+
 	if err != nil {
 		err = gerror.Newf(`ErrorORM`)
 
-		return nil
+		return nil, err
 	}
 
 	fileInfo, err := dao.File.Ctx(ctx).Where("id=", sdkSoftwareInfo["file_id"]).One()
 	if err != nil {
 		err = gerror.Newf(`ErrorORM`)
 
-		return nil
+		return nil, err
 	}
 
 	//处理数据
@@ -157,7 +156,5 @@ func (s *sSdkUserProduct) Download(ctx context.Context) (res *v1.DownloadItem) {
 		FileUrl:  fileInfo["file_url"].String(),
 	}
 
-	return
-
-	//return nil
+	return res, nil
 }
