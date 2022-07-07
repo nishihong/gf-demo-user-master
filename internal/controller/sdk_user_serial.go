@@ -23,8 +23,14 @@ func (a *cSdkUserSerial) GetUserSerialList(ctx context.Context, req *v1.GetUserS
 
 func (a *cSdkUserSerial) GetKey(ctx context.Context, req *v1.GetKeyReq) (res *v1.GetKeyRes, err error) {
 
+	Result, err := service.SdkUserSerial().GetKey(ctx, req.Id)
+
+	if err != nil {
+		return nil, err
+	}
+
 	res = &v1.GetKeyRes{
-		Data: service.SdkUserSerial().GetKey(ctx, req.Id),
+		Data: Result,
 	}
 
 	return

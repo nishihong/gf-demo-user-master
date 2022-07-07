@@ -9,5 +9,5 @@ type GetStatusReq struct {
 }
 
 type GetStatusRes struct {
-	List map[int]string
+	Data map[int]string `json:"data"   dc:"列表"`
 }

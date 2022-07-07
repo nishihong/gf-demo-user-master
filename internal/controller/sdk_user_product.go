@@ -14,7 +14,7 @@ var SdkUserProduct = cSdkUserProduct{}
 
 type cSdkUserProduct struct{}
 
-func (a *cSdkUserProduct) GetList(ctx context.Context, req *v1.GetSdkListReq) (res *v1.GetSdkListRes, err error) {
+func (a *cSdkUserProduct) GetSdkList(ctx context.Context, req *v1.GetSdkListReq) (res *v1.GetSdkListRes, err error) {
 
 	Result, err := service.SdkUserProduct().GetSdkList(ctx, model.GetSdkUserProductInput{
 		Keyword:       req.Keyword,

@@ -42,10 +42,11 @@ var (
 					//})
 
 					group.Bind(
-						controller.SdkProduct,     // 个人
-						controller.Product,        // 内容
-						controller.SdkUserProduct, // 交互
-						controller.SdkUserSerial,  // 文件
+						controller.SdkRules,       // 产品
+						controller.SdkProduct,     // 产品
+						controller.Product,        // 产品
+						controller.SdkUserProduct, // 用户产品
+						controller.SdkUserSerial,  // 用户套餐
 					)
 				})
 			})

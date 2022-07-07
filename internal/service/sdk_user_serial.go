@@ -61,7 +61,7 @@ func (s *sSdkUserSerial) GetUserSerialList(ctx context.Context, id int) (list []
 
 	//数据处理
 	for i, v := range result {
-		fmt.Println(v)
+		//fmt.Println(v)
 		host_count, _ := dao.SdkRules.Ctx(ctx).Where("user_serial_id=", v["id"]).Distinct().CountColumn("source_ip")
 		results[i].HostCount = host_count
 
@@ -76,7 +76,7 @@ func (s *sSdkUserSerial) GetUserSerialList(ctx context.Context, id int) (list []
 }
 
 // GetKey.
-func (s *sSdkUserSerial) GetKey(ctx context.Context, id int) string {
+func (s *sSdkUserSerial) GetKey(ctx context.Context, id int) (string, error) {
 
 	//当前用户
 	userId := Context().Get(ctx).User.Id
@@ -87,14 +87,16 @@ func (s *sSdkUserSerial) GetKey(ctx context.Context, id int) string {
 	fmt.Println(sdk_key.String())
 	if err != nil {
 		err = gerror.Newf(`ErrorORM`)
+		return "", err
 	}
 
-	//?????写法有问题
 	if sdk_key.String() == "" {
 		err = gerror.Newf(`游戏不存在`)
+		return "", err
+
 	}
 
-	return sdk_key.String()
+	return sdk_key.String(), nil
 }
 
 // EditUserSerial.
