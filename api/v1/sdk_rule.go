@@ -67,19 +67,19 @@ type SdkRuleListItem struct {
 	PortIntervals string      `json:"port_intervals"`
 }
 
-type EditRuleReq struct {
-	g.Meta `path:"/api/sdk/rule/one" method:"post" tags:"rule" summary:"EditUserSerial"`
-	Id     int    `json:"id" v:"required"`
-	Name   string `json:"name" v:"required"`
-}
-type EditRuleRes struct {
-}
-
-type CreateRuleReq struct {
-	g.Meta           `path:"/api/sdk/rule" method:"post" tags:"rule" summary:"Create"`
-	Name             string `json:"name" v:"required"`
-	SdkUserProductId int    `json:"sdk_user_product_id" v:"required"`
-}
+//type EditRuleReq struct {
+//	g.Meta `path:"/api/sdk/rule/one" method:"post" tags:"rule" summary:"EditUserSerial"`
+//	Id     int    `json:"id" v:"required"`
+//	Name   string `json:"name" v:"required"`
+//}
+//type EditRuleRes struct {
+//}
+//
+//type CreateRuleReq struct {
+//	g.Meta           `path:"/api/sdk/rule" method:"post" tags:"rule" summary:"Create"`
+//	Name             string `json:"name" v:"required"`
+//	SdkUserProductId int    `json:"sdk_user_product_id" v:"required"`
+//}
 
 type CreateRuleRes struct {
 }

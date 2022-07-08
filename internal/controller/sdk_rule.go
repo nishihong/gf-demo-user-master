@@ -78,27 +78,27 @@ func (a *cSdkRules) GetSdkRuleList(ctx context.Context, req *v1.GetSdkRuleListRe
 	return
 }
 
-func (a *cSdkRules) EditRule(ctx context.Context, req *v1.EditUserSerialReq) (res *v1.EditUserSerialRes, err error) {
-
-	err = service.SdkRules().EditRule(ctx, req.Id, req.Name)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return
-}
-
-func (a *cSdkRules) CreateRule(ctx context.Context, req *v1.CreateUserSerialReq) (res *v1.CreateUserSerialRes, err error) {
-
-	err = service.SdkRules().CreateRule(ctx, req.SdkUserProductId, req.Name)
-
-	if err != nil {
-		return nil, err
-	}
-
-	return
-}
+//func (a *cSdkRules) EditRule(ctx context.Context, req *v1.EditUserSerialReq) (res *v1.EditUserSerialRes, err error) {
+//
+//	err = service.SdkRules().EditRule(ctx, req.Id, req.Name)
+//
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return
+//}
+//
+//func (a *cSdkRules) CreateRule(ctx context.Context, req *v1.CreateUserSerialReq) (res *v1.CreateUserSerialRes, err error) {
+//
+//	err = service.SdkRules().CreateRule(ctx, req.SdkUserProductId, req.Name)
+//
+//	if err != nil {
+//		return nil, err
+//	}
+//
+//	return
+//}
 
 func (a *cSdkRules) DeleteRule(ctx context.Context, req *v1.DeleteRuleReq) (res *v1.DeleteRuleRes, err error) {
 
